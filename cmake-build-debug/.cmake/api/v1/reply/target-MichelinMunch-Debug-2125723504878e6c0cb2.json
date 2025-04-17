@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "MichelinMunch.exe"
-		},
-		{
-			"path" : "MichelinMunch.pdb"
+			"path" : "MichelinMunch"
 		}
 	],
 	"backtrace" : 1,
@@ -45,14 +42,14 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -std=gnu++14 -fdiagnostics-color=always"
+					"fragment" : "-g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.6 -fcolor-diagnostics"
 				}
 			],
 			"includes" : 
 			[
 				{
 					"backtrace" : 2,
-					"path" : "C:/Users/Admin/CLionProjects/MichelinMunch/include"
+					"path" : "/Users/elyglez/Documents/GitHub/MichelinMunch/include"
 				}
 			],
 			"language" : "CXX",
@@ -82,16 +79,12 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
-				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
 	"name" : "MichelinMunch",
-	"nameOnDisk" : "MichelinMunch.exe",
+	"nameOnDisk" : "MichelinMunch",
 	"paths" : 
 	{
 		"build" : ".",
