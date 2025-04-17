@@ -1,10 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/MichelinMunch.dir/src/main.cpp.obj"
-  "CMakeFiles/MichelinMunch.dir/src/main.cpp.obj.d"
-  "MichelinMunch.exe"
-  "MichelinMunch.exe.manifest"
+  "CMakeFiles/MichelinMunch.dir/src/main.cpp.o"
+  "CMakeFiles/MichelinMunch.dir/src/main.cpp.o.d"
+  "MichelinMunch"
   "MichelinMunch.pdb"
-  "libMichelinMunch.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.
