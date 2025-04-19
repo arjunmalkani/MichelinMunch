@@ -25,14 +25,14 @@ private:
 
     // helper function for insert to resize table and rehash key values
     void resize() {
+        vector<Bucket> oldTable = table;
         capacity *= 2;
-        vector<Bucket> newTable;
         table.clear();
         table.resize(capacity);
         size = 0;
 
-        for (const auto& bucket : table) {
-            if(bucket.occupied) {
+        for (const auto& bucket : oldTable) {
+            if (bucket.occupied) {
                 insert(bucket.key, bucket.value);
             }
         }
@@ -71,29 +71,28 @@ public:
         }
     }
 
-    // using bool bc of outdated c++ so no include optional
-    Value& search(const Key& key) {
-        // searches if key exists, returns true if so
-        // will be used to determine if user inputs exist in maps
+    // returns value of input key to user
+    const Value& search(const Key& key) const {
         int index = hashing(key) % capacity;
         int probeCounter = 0;
         while (probeCounter < capacity) {
             int probe = (index + probeCounter * probeCounter) % capacity;
 
-            if(!table[probe].occupied) {
-                break;
-            }
-            if(table[probe].key == key) {
-                return table[probe].value;;
-            }
+            if (!table[probe].occupied) break;
+            if (table[probe].key == key) return table[probe].value;
             probeCounter++;
         }
         throw runtime_error("Key not found");
     }
 
+    // checks if key exists
     bool contains(const Key& key) const {
-        Value none;
-        return search(key, none);
+        try {
+            const_cast<OpenAddressHashMap*>(this)->search(key);
+            return true;
+        } catch (const std::runtime_error&) {
+            return false;
+        }
     }
 
     int getSize() { return size; }
