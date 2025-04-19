@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.27"
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "MichelinMunch::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-MichelinMunch-Debug-2125723504878e6c0cb2.json",
+					"jsonFile" : "target-MichelinMunch-Debug-5b71ef6af0d776513bfa.json",
 					"name" : "MichelinMunch",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/elyglez/Documents/GitHub/MichelinMunch/cmake-build-debug",
-		"source" : "/Users/elyglez/Documents/GitHub/MichelinMunch"
+		"build" : "C:/Users/antho/CLionProjects/MichelinMunch/cmake-build-debug",
+		"source" : "C:/Users/antho/CLionProjects/MichelinMunch"
 	},
 	"version" : 
 	{
