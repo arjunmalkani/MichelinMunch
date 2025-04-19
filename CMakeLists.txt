@@ -12,4 +12,4 @@ add_executable(MichelinMunch
         include/Restaurant.h
         include/DatasetLoader.h
         src/DatasetLoader.cpp
-        include/HashMapOpen.cpp)
+)
