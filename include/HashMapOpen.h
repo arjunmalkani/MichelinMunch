@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <optional>
 
 using namespace std;
 
@@ -51,12 +50,12 @@ public:
 
         // gets index by getting key's hash value and doing mod capacity
         int index = hashing(key) % capacity;
-        int i = 0;
+        int probeCounter = 0;
 
         // using quadratic probing to avoid clusters
-        while (i < capacity) {
-            // i quadractically increases for fitting probe location
-            int probe = (index + i * i) % capacity;
+        while (probeCounter < capacity) {
+            // probeCounter quadractically increases for fitting probe location
+            int probe = (index + probeCounter * probeCounter) % capacity;
 
             // if probed index is not occupied or the key is the same, place into index
             if(!table[probe].occupied || table[probe].key == key) {
@@ -64,11 +63,32 @@ public:
                 table[probe].key = key;
                 table[probe].value = value;
                 table[probe].occupied = true;
-                size ++;
+                size++;
                 return;
             }
-            // if table is occupied, i increases and loop repeats until found index
-            i++;
+            // if table is occupied, probeCounter increases and loop repeats until found index
+            probeCounter++;
         }
+    }
+
+    // using bool bc of outdated c++ so no include optional
+    bool search(const Key& key, Value& v) {
+        // searches if key exists, returns true if so
+        // will be used to determine if user inputs exist in maps
+        int index = hashing(key) % capacity;
+        int probeCounter = 0;
+        while (probeCounter < capacity) {
+            int probe = (index + probeCounter * probeCounter) % capacity;
+
+            if(!table[probe].occupied) {
+                return false;
+            }
+            if(table[probe].key == key) {
+                v = table[probe].value;
+                return true;
+            }
+            probeCounter++;
+        }
+        return false;
     }
 };
