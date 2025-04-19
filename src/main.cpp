@@ -30,20 +30,10 @@ void updateMaps(vector<Restaurant> &restaurants,
         priceMapSc.insert(price, name);
     }
 }
-int main() {
-    // testing data parsing
-    string filename = "../data/michelin_my_maps.csv";
-    vector<Restaurant> restaurants = loadDataset(filename);
 
+void sepChainingPrint(SeparateChaining<string,
     SeparateChaining<string,
-    SeparateChaining<string,
-    SeparateChaining<string, string>>> scMap;
-    updateMaps(restaurants, scMap);
-
-    //testing maps
-    string city = "Miami, USA";
-    string stars = "2 Stars";
-    string price = "$$$";
+    SeparateChaining<string, string>>>& scMap, string& city, string& stars, string& price) {
     if (scMap.contains(city)) {
         auto starMap = scMap.search(city);
 
@@ -62,22 +52,44 @@ int main() {
     } else {
         cout << "No restaurants found in city: " << city << endl;
     }
+}
 
 
+int main() {
+    // testing data parsing
+    string filename = "../data/michelin_my_maps.csv";
+    vector<Restaurant> restaurants = loadDataset(filename);
 
-    //cout << "Total restaurants parsed: " << restaurants.size() << endl;
+    SeparateChaining<string,
+    SeparateChaining<string,
+    SeparateChaining<string, string>>> scMap;
+    updateMaps(restaurants, scMap);
 
-    // prints first 400 restaurants info to verify parsing works
-    // for (int i = 0; i < 10; i++) {
-    //     const Restaurant& r = restaurants[i];
-    //     cout << "Name: " << r.name << endl;
-    //     cout << "Address: " << r.address << endl;
-    //     cout << "City: " << r.location  << endl;
-    //     cout << "Price: " << r.price << endl;
-    //     cout << "Cuisine: " << r.cuisine << endl;
-    //     cout << "Stars: " << r.starCount << endl;
-    //     cout << "------------------------" << endl;
-    // }
+    //testing maps
+    string city = "Miami, USA";
+    string stars = "2 Stars";
+    string price = "$$$";
+
+    sepChainingPrint(scMap, city, stars, price);
+
 
     return 0;
 }
+
+
+
+
+//cout << "Total restaurants parsed: " << restaurants.size() << endl;
+
+// prints first 400 restaurants info to verify parsing works
+// for (int i = 0; i < 10; i++) {
+//     const Restaurant& r = restaurants[i];
+//     cout << "Name: " << r.name << endl;
+//     cout << "Address: " << r.address << endl;
+//     cout << "City: " << r.location  << endl;
+//     cout << "Price: " << r.price << endl;
+//     cout << "Cuisine: " << r.cuisine << endl;
+//     cout << "Stars: " << r.starCount << endl;
+//     cout << "------------------------" << endl;
+// }
+
