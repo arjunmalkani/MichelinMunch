@@ -8,7 +8,7 @@ struct Node {
     Node* next;
 
     Node() : key(""), value(""), next(nullptr) {}
-    Node(Key k, Value v) : key(k), value(v) {}
+    Node(const Key& k, const Value& v) : key(k), value(v), next(nullptr) {}
 };
 
 template<typename Key, typename Value>

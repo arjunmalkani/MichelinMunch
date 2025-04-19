@@ -12,7 +12,15 @@ void printRestaurantsOA(CityMap& allRestaurants, const string& city, const strin
         if (starsMap.contains(stars)) {
             PriceMap priceMap = starsMap.search(stars);
             if (priceMap.contains(price)) {
-                vector<Restaurant> matches = priceMap.search(price);
+                vector<Restaurant> matches;
+
+                try {
+                    matches = priceMap.search(price);
+                } catch (const runtime_error& e) {
+                    cout << "Price not found: " << e.what() << endl;
+                    return;
+                }
+
                 cout << "Found " << matches.size() << " restaurants in " << city
                      << " with " << stars << " stars and price " << price << ":\n\n";
 
