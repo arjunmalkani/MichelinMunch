@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/elyglez/Documents/GitHub/MichelinMunch/src/main.cpp" "CMakeFiles/MichelinMunch.dir/src/main.cpp.o" "gcc" "CMakeFiles/MichelinMunch.dir/src/main.cpp.o.d"
+  "C:/Users/antho/CLionProjects/MichelinMunch/src/main.cpp" "CMakeFiles/MichelinMunch.dir/src/main.cpp.obj" "gcc" "CMakeFiles/MichelinMunch.dir/src/main.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
