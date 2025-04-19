@@ -33,19 +33,21 @@ class SeparateChaining {
                 node = node->next;
             }
         }
-        for (int i = 0; i < capacity; i++) {
-            Node* curr = table[i];
+        for (int i = 0; i < oldCapacity; i++) {
+            Node* curr = oldTable[i];
             while(curr != nullptr) {
                 Node* node = curr;
                 curr = curr->next;
                 delete node;
             }
         }
-        delete[] table;
+        delete[] oldTable;
     }
 
     public:
     SeparateChaining() {
+        capacity = 10000;
+        count = 0;
         table = new Node*[capacity];
         for (int i = 0; i < capacity; i++) {
             table[i] = nullptr;
@@ -62,7 +64,7 @@ class SeparateChaining {
         }
         delete[] table;
     }
-    void insert(string key, string value) {
+    void insert(const string& key, const string &value) {
         int index = hashFunction(key);
         Node *node = new Node(key, value);
         node->next = table[index];
@@ -85,7 +87,7 @@ class SeparateChaining {
         return "Key not found";
     }
     float loadFactor() const {
-        return count/capacity;
+        return static_cast<float>(count)/capacity;
     }
     int getSize() const { return capacity;}
     int getCount() const { return count;}
