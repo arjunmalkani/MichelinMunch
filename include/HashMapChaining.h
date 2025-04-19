@@ -14,7 +14,9 @@ class SeparateChaining {
     int capacity; // size of table
     int count; // num of items in table
     Node** table;
-    int hashFunction(string key);
+    int hashFunction(const string& key) {
+        return hash<string>{}(key) % capacity;
+    }
     void reHash() {
         int oldCapacity = capacity;
         capacity *=2;
