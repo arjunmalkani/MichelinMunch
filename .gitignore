@@ -1,1 +1,25 @@
-cmake-build-debug
+# CMake build directories and files
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.cmake
+*.ninja
+build/
+compile_commands.json
+
+# Executables and object files
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dylib
+
+# IDE files
+.idea/
+.vscode/
+
+# System files
+.DS_Store
