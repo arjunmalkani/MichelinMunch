@@ -72,7 +72,7 @@ public:
     }
 
     // using bool bc of outdated c++ so no include optional
-    bool search(const Key& key, Value& v) {
+    Value& search(const Key& key) {
         // searches if key exists, returns true if so
         // will be used to determine if user inputs exist in maps
         int index = hashing(key) % capacity;
@@ -81,14 +81,21 @@ public:
             int probe = (index + probeCounter * probeCounter) % capacity;
 
             if(!table[probe].occupied) {
-                return false;
+                break;
             }
             if(table[probe].key == key) {
-                v = table[probe].value;
-                return true;
+                return table[probe].value;;
             }
             probeCounter++;
         }
-        return false;
+        throw runtime_error("Key not found");
     }
+
+    bool contains(const Key& key) const {
+        Value none;
+        return search(key, none);
+    }
+
+    int getSize() { return size; }
+
 };
