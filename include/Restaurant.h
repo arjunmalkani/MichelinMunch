@@ -10,5 +10,5 @@ struct Restaurant {
     string location;
     string price;
     string cuisine;
-    int starCount;
+    string starCount;
 };
