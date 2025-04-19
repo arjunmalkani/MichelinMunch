@@ -6,7 +6,8 @@
 void updateMaps(vector<Restaurant> &restaurants,
     SeparateChaining<string,
     SeparateChaining<string,
-    SeparateChaining<string, string>>> &scMap) {
+    SeparateChaining<string, vector<Restaurant>>>> &scMap) { // last val is vector of restaurant objs to print multiple
+    // outputs for the user
 
     SeparateChaining<string, SeparateChaining<string, string>> cityMapSc;
 
@@ -19,15 +20,19 @@ void updateMaps(vector<Restaurant> &restaurants,
 
 
         if (!scMap.contains(city)) {
-            scMap.insert(city, SeparateChaining<string, SeparateChaining<string, string>>());
+            scMap.insert(city, SeparateChaining<string, SeparateChaining<string, vector<Restaurant>>>());
         }
         auto& starMapSc = scMap.search(city);
 
         if (!starMapSc.contains(stars)) {
-            starMapSc.insert(stars, SeparateChaining<string, string>());
+            starMapSc.insert(stars, SeparateChaining<string, vector<Restaurant>>());
         }
         auto& priceMapSc = starMapSc.search(stars);
-        priceMapSc.insert(price, name);
+
+        if (!priceMapSc.contains(price)) {
+            priceMapSc.insert(price, vector<Restaurant>());
+        }
+        priceMapSc.search(price).push_back(restaurant);
     }
 }
 int main() {
@@ -37,13 +42,13 @@ int main() {
 
     SeparateChaining<string,
     SeparateChaining<string,
-    SeparateChaining<string, string>>> scMap;
+    SeparateChaining<string, vector<Restaurant>>>> scMap; // using restaurant vector to give more info to user
     updateMaps(restaurants, scMap);
 
     //testing maps
     string city = "Miami, USA";
-    string stars = "2 Stars";
-    string price = "$$$";
+    string stars = "1 Star";
+    string price = "$$$$";
     if (scMap.contains(city)) {
         auto starMap = scMap.search(city);
 
@@ -51,9 +56,13 @@ int main() {
             auto priceMap = starMap.search(stars);
 
             if (priceMap.contains(price)) {
-                string name = priceMap.search(price);
-                cout << "Restaurant found in " << city << " with " << stars << " and " << price << " price: " << name << endl;
-            } else {
+                vector<Restaurant> matches = priceMap.search(price);
+                cout << "Restaurants found in " << city << " with " << stars << " and " << price << " price:" << endl;
+                for (const Restaurant& r : matches) {
+                    cout << "- " << r.name << " | " << r.address << " | Cuisine: " << r.cuisine << endl;
+                }
+            }
+            else {
                 cout << "No restaurant found at price: " << price << endl;
             }
         } else {
