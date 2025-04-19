@@ -11,4 +11,9 @@ struct Restaurant {
     string price;
     string cuisine;
     string starCount;
+
+    // users would want this info too so i added it and was part of initial project scope
+    // - ant :3
+    string website;
+    string phone;
 };
