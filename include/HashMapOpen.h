@@ -1,100 +1,116 @@
-#include <iostream>
+#pragma once
 #include <vector>
-
-using namespace std;
-
-
+#include <optional>
+#include <functional>
 template<typename Key, typename Value>
 class OpenAddressHashMap {
 private:
     struct Bucket {
         Key key;
-        Value value;
-        bool occupied;
-        //bool deleted
+        optional<Value> value; // only constructs vals when needed
+        bool occupied = false;
     };
+
     vector<Bucket> table;
     int capacity;
     int size;
     float loadFactor;
 
-    // uses std::hash to hash key values 7
+    // Primary hash function (mod capacity)
     int hashing(const Key& key) const {
-        return hash<Key>{}(key) & capacity;
+        return hash<Key>{}(key) % capacity;
     }
 
     // helper function for insert to resize table and rehash key values
     void resize() {
-        vector<Bucket> oldTable = table;
         capacity *= 2;
-        table.clear();
-        table.resize(capacity);
-        size = 0;
+        vector<Bucket> newTable(capacity);
 
-        for (const auto& bucket : oldTable) {
+        for (auto& bucket : table) {
             if (bucket.occupied) {
-                insert(bucket.key, bucket.value);
+                int idx = hash<Key>{}(bucket.key) % capacity;
+                while (newTable[idx].occupied) {
+                    idx = (idx + 1) % capacity;
+                }
+                newTable[idx].occupied = true;
+                newTable[idx].key = move(bucket.key);
+                newTable[idx].value = move(bucket.value);
             }
         }
+        table = move(newTable);
     }
 
 public:
-    OpenAddressHashMap(int cap = 1000) : capacity(cap), size(0), loadFactor(0.75f) {
-        table.resize(capacity);
-    }
+    // constructor
+    OpenAddressHashMap(int cap = 1000)
+      : table(cap), capacity(cap), size(0), loadFactor(0.75f)
+    {}
 
-    void insert(const Key& key, const Value& value) {
-        if((size/capacity) >= loadFactor) {
+    // inserts key-value pairs for map
+    void insert(const Key& key, const Value& val) {
+        if (static_cast<float>(size + 1) / capacity >= loadFactor) {
             resize();
         }
-
-        // gets index by getting key's hash value and doing mod capacity
-        int index = hashing(key) % capacity;
-        int probeCounter = 0;
-
-        // using quadratic probing to avoid clusters
-        while (probeCounter < capacity) {
-            // probeCounter quadractically increases for fitting probe location
-            int probe = (index + probeCounter * probeCounter) % capacity;
-
-            // if probed index is not occupied or the key is the same, place into index
-            if(!table[probe].occupied || table[probe].key == key) {
-                // bucket's key value pairs get set and it becomes occupied
-                table[probe].key = key;
-                table[probe].value = value;
-                table[probe].occupied = true;
-                size++;
-                return;
-            }
-            // if table is occupied, probeCounter increases and loop repeats until found index
-            probeCounter++;
+        int idx = hashing(key);
+        // linear probing approach
+        while (table[idx].occupied && table[idx].key != key) {
+            idx = (idx + 1) % capacity;
+        }
+        if (!table[idx].occupied) {
+            table[idx].occupied = true;
+            table[idx].key      = key;
+            table[idx].value.emplace(val);
+            ++size;
+        } else {
+            // overwrites value if key exists
+            table[idx].value = val;
         }
     }
 
-    // returns value of input key to user
-    const Value& search(const Key& key) const {
-        int index = hashing(key) % capacity;
-        int probeCounter = 0;
-        while (probeCounter < capacity) {
-            int probe = (index + probeCounter * probeCounter) % capacity;
-
-            if (!table[probe].occupied) break;
-            if (table[probe].key == key) return table[probe].value;
-            probeCounter++;
+    // replicates maps' [] operation with avg case O(1) runtime
+    // access keys and returns reference to value
+    Value& operator[](const Key& key) {
+        if (static_cast<float>(size + 1) / capacity >= loadFactor) {
+            resize();
         }
-        throw runtime_error("Key not found");
+        int idx = hashing(key);
+        while (table[idx].occupied && table[idx].key != key) {
+            idx = (idx + 1) % capacity;
+        }
+        if (!table[idx].occupied) {
+            table[idx].occupied = true;
+            table[idx].key = key;
+            table[idx].value.emplace();
+            ++size;
+        }
+        return *table[idx].value;
+    }
+
+    // uses optional to safely return if key isnt found
+    optional<Value> search(const Key& key) const {
+        int start = hashing(key);
+        for (int probe = 0; probe < capacity; ++probe) {
+            int idx = (start + probe) % capacity;
+            if (!table[idx].occupied) {
+                // table breaks if empty bucket
+                break;
+            }
+            if (table[idx].key == key) {
+                // returns table's index if keys match
+                return table[idx].value;
+            }
+        }
+        // returns "no value"
+        return nullopt;
     }
 
     // checks if key exists
     bool contains(const Key& key) const {
-        try {
-            const_cast<OpenAddressHashMap*>(this)->search(key);
-            return true;
-        } catch (const std::runtime_error&) {
-            return false;
-        }
+        return search(key).has_value();
     }
 
-    int getSize() { return size; }
-
+    // Current number of stored key-value pairs
+    int getSize() const {
+        return size;
+    }
 };

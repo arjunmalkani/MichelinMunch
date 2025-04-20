@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 project(MichelinMunch)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
 
@@ -12,4 +12,4 @@ add_executable(MichelinMunch
         include/Restaurant.h
         include/DatasetLoader.h
         src/DatasetLoader.cpp
-        include/HashMapOpen.cpp)
+)
