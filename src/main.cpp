@@ -210,7 +210,7 @@ int main() {
             if (choice == "Y" || choice == "y") {
                 stars = "Selected Restaurants";
             } else {
-                cout << "Invalid input. Exiting.\n";
+                cout << "Entered N or invalid input. Exiting.\n";
                 break;
             }
         }
