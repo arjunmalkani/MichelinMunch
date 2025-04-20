@@ -68,113 +68,83 @@ void sepChainingPrint(SeparateChaining<string,
     }
 }
 
-void printRestaurantsOA(CityMap& allRestaurants, const string& city, const string& stars, const string& price) {
-    if (allRestaurants.contains(city)) {
-        StarsMap starsMap = allRestaurants.search(city);
-        if (starsMap.contains(stars)) {
-            PriceMap priceMap = starsMap.search(stars);
-            if (priceMap.contains(price)) {
-                vector<Restaurant> matches;
-
-                try {
-                    matches = priceMap.search(price);
-                } catch (const runtime_error& e) {
-                    cout << "Price not found: " << e.what() << endl;
-                    return;
-                }
-
-                cout << "Found " << matches.size() << " restaurants in " << city
-                     << " with " << stars << " stars and price " << price << ":\n\n";
-
-                for (const auto& r : matches) {
-                    cout << "Name: " << r.name << "\n";
-                    cout << "Address: " << r.address << "\n";
-                    cout << "Cuisine: " << r.cuisine << "\n";
-                    cout << "Website: " << r.website << "\n";
-                    cout << "Phone: " << r.phone << "\n";
-                    cout << "---------------------------\n";
-                }
-            } else {
-                cout << "No restaurants at that price.\n";
-            }
-        } else {
-            cout << "No restaurants with that star rating.\n";
-        }
-    } else {
+void printRestaurantsOA(CityMap& allRestaurants, const string& city, const string& stars, const string& price)
+{
+    if (!allRestaurants.contains(city)) {
         cout << "No restaurants in that city.\n";
+        return;
+    }
+    StarsMap& starsMap = allRestaurants[city];
+
+    if (!starsMap.contains(stars)) {
+        cout << "No restaurants with that star rating.\n";
+        return;
+    }
+    PriceMap& priceMap = starsMap[stars];
+
+    if (!priceMap.contains(price)) {
+        cout << "No restaurants at that price.\n";
+        return;
+    }
+    vector<Restaurant>& matches = priceMap[price];
+
+    // 4) Print results
+    cout << "Found " << matches.size()
+         << " restaurants in " << city
+         << " with " << stars
+         << " stars and price " << price << ":\n\n";
+
+    for (const auto& r : matches) {
+        cout << "Name:    " << r.name    << "\n"
+             << "Address: " << r.address << "\n"
+             << "Cuisine: " << r.cuisine << "\n";
+        if (!r.website.empty()) cout << "Website: " << r.website << "\n";
+        if (!r.phone.empty())   cout << "Phone:   " << r.phone   << "\n";
+        cout << "---------------------------\n";
     }
 }
 
 
-void mapInsertionsOA(vector<Restaurant>& restaurants, CityMap& allRestaurants) {
+void mapInsertionsOA(vector<Restaurant>& restaurants,
+                     CityMap& allRestaurants) {
     for (auto& r : restaurants) {
-        const string& city = r.location;
-        const string& stars = r.starCount;
-        const string& price = r.price;
-
-        StarsMap starsMap;
-        if (!allRestaurants.contains(city)) {
-            starsMap = StarsMap();
-        } else {
-            starsMap = allRestaurants.search(city);
-        }
-
-        PriceMap priceMap;
-        if (!starsMap.contains(stars)) {
-            priceMap = PriceMap();
-        } else {
-            priceMap = starsMap.search(stars);
-        }
-
-        vector<Restaurant> matches;
-        if (!priceMap.contains(price)) {
-            matches = vector<Restaurant>();
-        } else {
-            matches = priceMap.search(price);
-        }
+        StarsMap& starsMap = allRestaurants[r.location];
+        PriceMap& priceMap = starsMap[r.starCount];
+        auto& matches = priceMap[r.price];
 
         matches.push_back(r);
-        priceMap.insert(price, matches);
-        starsMap.insert(stars, priceMap);
-        allRestaurants.insert(city, starsMap);
     }
 }
 
 int main() {
-    // testing data parsing
-    string filename = "../data/michelin_my_maps.csv";
-    vector<Restaurant> restaurants = loadDataset(filename);
-
     //testing maps
     string city = "Miami, USA";
     string stars = "1 Star";
     string price = "$$$$";
 
+    // testing data parsing
+    string filename = "../data/michelin_my_maps.csv";
+    vector<Restaurant> restaurants = loadDataset(filename);
+    cout << "Loaded " << restaurants.size() << " restaurants\n";
 
     CityMap Michelin;
-    mapInsertionsOA(restaurants, Michelin);
+    cout << "Starting insertion…\n";
+
+    // 2) Track progress in the big loop
+    for (size_t i = 0; i < restaurants.size(); ++i) {
+        // your existing per‑restaurant logic:
+        StarsMap&   starsMap = Michelin[restaurants[i].location];
+        PriceMap&   priceMap = starsMap[restaurants[i].starCount];
+        auto&       vec      = priceMap[restaurants[i].price];
+        vec.push_back(restaurants[i]);
+
+        // every 1 000 entries, spit out a line
+        if (i % 1000 == 0) {
+            cout << "  inserted " << i << "/" << restaurants.size() << "\n";
+        }
+    }
+
+    cout << "Done inserting. Now printing…\n";
     printRestaurantsOA(Michelin, city, stars, price);
-
-
-    // SeparateChaining<string,
-    // SeparateChaining<string,
-    // SeparateChaining<string, vector<Restaurant>>>> scMap; // using restaurant vector to give more info to user
-    // updateMaps(restaurants, scMap);
-    // sepChainingPrint(scMap, city, stars, price);
     return 0;
 }
-
-
-//cout << "Total restaurants parsed: " << restaurants.size() << endl;
-
-// prints first 400 restaurants info to verify parsing works
-// for (int i = 0; i < 10; i++) {
-//     const Restaurant& r = restaurants[i];
-//     cout << "Name: " << r.name << endl;
-//     cout << "Address: " << r.address << endl;
-//     cout << "City: " << r.location  << endl;
-//     cout << "Price: " << r.price << endl;
-//     cout << "Cuisine: " << r.cuisine << endl;
-//     cout << "Stars: " << r.starCount << endl;
-//     cout << "------------------------" << endl;
-// }
