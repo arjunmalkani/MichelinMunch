@@ -1,7 +1,37 @@
 #include <iostream>
+#include <chrono>
 #include "../include/DatasetLoader.h"
 #include "HashMapChaining.h"
 #include "HashMapOpen.h"
+
+using namespace std::chrono;
+
+// helper to trim leading/trailing whitespace
+string trim(const string& str) {
+    const string WHITESPACE = " \t\n"; // handles all forms of white spacing, tabs, newlines. and spaces
+    size_t first = str.find_first_not_of(WHITESPACE);
+    size_t last = str.find_last_not_of(WHITESPACE);
+    if (first == string::npos || last == string::npos)
+        return "";
+    return str.substr(first, last - first + 1);
+}
+
+// makes user input more universal
+string normalizeStars(const string& input) {
+    string s = trim(input);
+    for (auto& c : s) c = tolower(c);
+    if (s == "1 star") return "1 Star";
+    if (s == "2 stars" || s == "2 star") return "2 Stars";
+    if (s == "3 stars" || s == "3 star") return "3 Stars";
+    return s;
+}
+
+// makes sure user inputs of the city are case-insensitive
+string normalizeCity(const string& input) {
+    return trim(input);
+}
+
+
 
 void updateMaps(vector<Restaurant> &restaurants,
     SeparateChaining<string,
@@ -50,8 +80,9 @@ void sepChainingPrint(SeparateChaining<string,
                 vector<Restaurant> matches = priceMap.search(price);
                 cout << "Restaurants found in " << city << " with " << stars << " and " << price << " price:" << endl;
                 for (const Restaurant& r : matches) {
-                    cout << "- " << r.name << " | " << r.address << " | Cuisine: " << r.cuisine << endl;
+                    cout << "- " << "Restaurant: " << r.name << " | Address: " << r.address << " | Cuisine: " << r.cuisine << endl;
                 }
+                cout << endl;
             }
             else {
                 cout << "No restaurant found at price: " << price << endl;
@@ -63,24 +94,51 @@ void sepChainingPrint(SeparateChaining<string,
         cout << "No restaurants found in city: " << city << endl;
     }
 }
+
 int main() {
-    // testing data parsing
+    cout << "Welcome to MichelinMunch!" << endl;
+    cout << "You can search for restaurants by city, star rating, and price." << endl;
+    cout << "Type 'exit' at any point to quit.\n" << endl;
+
     string filename = "../data/michelin_my_maps.csv";
     vector<Restaurant> restaurants = loadDataset(filename);
 
     SeparateChaining<string,
-    SeparateChaining<string,
-    SeparateChaining<string, vector<Restaurant>>>> scMap; // using restaurant vector to give more info to user
+            SeparateChaining<string,
+                    SeparateChaining<string, vector<Restaurant>>>> scMap;
+    auto startScTimer = high_resolution_clock::now();
     updateMaps(restaurants, scMap);
+    auto endScTimer = high_resolution_clock::now();
+    auto durationSc = duration_cast<milliseconds>(endScTimer - startScTimer).count();
 
-    //testing maps
-    string city = "Miami, USA";
-    string stars = "1 Star";
-    string price = "$$$$";
+    while (true) {
+        string rawCity, rawStars, rawPrice;
 
-    sepChainingPrint(scMap, city, stars, price);
+        cout << "Enter City **Case Sensitive** (format: City, Country): ";
+        getline(cin, rawCity);
+        if (rawCity == "exit") break;
+        string city = normalizeCity(rawCity);
+
+        cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars): ";
+        getline(cin, rawStars);
+        if (rawStars == "exit") break;
+        string stars = normalizeStars(rawStars);
+
+        cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): ";
+        getline(cin, rawPrice);
+        if (rawPrice == "exit") break;
+        string price = trim(rawPrice);
+
+        cout << "\nSearching...\n" << endl;
+        sepChainingPrint(scMap, city, stars, price);
+        cout << "Separate Chaining insertion time: " << durationSc << " ms\n";
+        cout << "\n--------------------------------------------------\n" << endl;
+    }
+
+    cout << "\nThank you for using MichelinMunch. Goodbye!" << endl;
     return 0;
 }
+
 
 
 //cout << "Total restaurants parsed: " << restaurants.size() << endl;
