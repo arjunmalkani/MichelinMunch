@@ -5,6 +5,24 @@
 
 using namespace std;
 
+// helper to normalize price to dollar format
+string normalizePrice(const string& rawPrice) {
+    int count = 0;
+    for (size_t i = 0; i < rawPrice.size(); ++i) {
+        // check for dollar sign
+        if (rawPrice[i] == '$') {
+            count++;
+        }
+            // check for the other currency symbols using substrings
+        else if (rawPrice.substr(i, 2) == "€" || rawPrice.substr(i, 2) == "£" ||
+                 rawPrice.substr(i, 2) == "¥") {
+            count++;
+            i++; // skip next byte since
+        }
+    }
+    return string(count, '$');  // normalize to $$$
+}
+
 vector<Restaurant> loadDataset(const string& filename) {
     vector<Restaurant> restaurants;
     ifstream file(filename);
@@ -45,7 +63,7 @@ vector<Restaurant> loadDataset(const string& filename) {
         r.name = fields[0];
         r.address = fields[1];
         r.location = fields[2];
-        r.price = fields[3];
+        r.price = normalizePrice(fields[3]);
         r.cuisine = fields[4];
         r.starCount = fields[10];
 

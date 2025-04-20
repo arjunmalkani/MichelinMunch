@@ -1,7 +1,36 @@
 #include <iostream>
+#include <chrono>
 #include "../include/DatasetLoader.h"
 #include "HashMapChaining.h"
 #include "HashMapOpen.h"
+
+using namespace std::chrono;
+
+// helper to trim leading/trailing whitespace in user inputs
+string trim(const string& str) {
+    const string WHITESPACE = " \t\n"; // handles all forms of white spacing, tabs, newlines, and spaces
+    size_t first = str.find_first_not_of(WHITESPACE);
+    size_t last = str.find_last_not_of(WHITESPACE);
+    if (first == string::npos || last == string::npos)
+        return "";
+    return str.substr(first, last - first + 1);
+}
+
+// makes user input more universal
+string normalizeStars(const string& input) {
+    string s = trim(input);
+    for (auto& c : s) c = tolower(c);
+    if (s == "1 star" || s == "1") return "1 Star";
+    if (s == "2 stars" || s == "2 star" || s == "2") return "2 Stars";
+    if (s == "3 stars" || s == "3 star" || s == "3") return "3 Stars";
+    return s;
+}
+
+// makes sure user inputs of the city are case-insensitive
+string normalizeCity(const string& input) {
+    return trim(input);
+}
+
 
 void updateMaps(vector<Restaurant> &restaurants,
                 SeparateChaining<string,
@@ -39,31 +68,44 @@ void updateMaps(vector<Restaurant> &restaurants,
 
 
 void sepChainingPrint(SeparateChaining<string,
-                          SeparateChaining<string,
-                              SeparateChaining<string, vector<Restaurant> > > > scMap, string city, string stars,
-                      string price) {
-    if (scMap.contains(city)) {
-        auto starMap = scMap.search(city);
+        SeparateChaining<string,
+                SeparateChaining<string, vector<Restaurant>>>>& scMap,
+                      const string& city, const string& stars, const string& price) {
 
-        if (starMap.contains(stars)) {
-            auto priceMap = starMap.search(stars);
-
-            if (priceMap.contains(price)) {
-                vector<Restaurant> matches = priceMap.search(price);
-                cout << "Restaurants found in " << city << " with " << stars << " and " << price << " price:" << endl;
-                for (const Restaurant &r: matches) {
-                    cout << "- " << r.name << " | " << r.address << " | Cuisine: " << r.cuisine << endl;
-                }
-            } else {
-                cout << "No restaurant found at price: " << price << endl;
-            }
-        } else {
-            cout << "No restaurant found with " << stars << " in " << city << endl;
-        }
-    } else {
+    if (!scMap.contains(city)) {
         cout << "No restaurants found in city: " << city << endl;
+        return;
+    }
+
+    auto& starMap = scMap.search(city);
+    if (!starMap.contains(stars)) {
+        cout << "No restaurants with " << stars << " in " << city << endl;
+        return;
+    }
+
+    auto& priceMap = starMap.search(stars);
+    if (!priceMap.contains(price)) {
+        cout << "No restaurants found at price : " << price << endl;
+        return;
+    }
+
+    auto& matches = priceMap.search(price);
+
+    cout << "Found " << matches.size()
+         << " restaurants in " << city
+         << " with " << stars
+         << " stars and price " << price << ":\n\n";
+
+    for (const auto& r : matches) {
+        cout << "Name:    " << r.name << "\n"
+             << "Address: " << r.address << "\n"
+             << "Cuisine: " << r.cuisine << "\n";
+        if (!r.website.empty()) cout << "Website: " << r.website << "\n";
+        if (!r.phone.empty()) cout << "Phone:   " << r.phone << "\n";
+        cout << "---------------------------\n";
     }
 }
+
 
 void printRestaurantsOA(
     OpenAddressHashMap<string,
@@ -71,18 +113,18 @@ void printRestaurantsOA(
     OpenAddressHashMap<string, vector<Restaurant>>>> &allRestaurants, const string &city,
                                                                       const string &stars, const string &price) {
     if (!allRestaurants.contains(city)) {
-        cout << "No restaurants in that city or city does not exist.\n";
+        cout << "No restaurants found in city: " << city << endl;
         return;
     }
 
     auto &starsMap = allRestaurants[city];
     if (!starsMap.contains(stars)) {
-        cout << "No restaurants with that star rating.\n";
+        cout << "No restaurants with " << stars << " in " << city << endl;
         return;
     }
     auto &priceMap = starsMap[stars];
     if (!priceMap.contains(price)) {
-        cout << "No restaurants with that price range.\n";
+        cout << "No restaurants found at price : " << price << endl;
         return;
     }
     auto &matches = priceMap[price];
@@ -119,67 +161,89 @@ void mapInsertionsOA(vector<Restaurant> &restaurants, OpenAddressHashMap<string,
 
 
 int main() {
-    string city;
-    string stars;
-    string price;
+    cout << "Welcome to MichelinMunch!\n"
+         << "You can search for restaurants by city, star rating, and price.\n"
+         << "Type 'exit' at any point to quit.\n\n";
 
-    cout << "Welcome To MichelinMunch!\n"
-    "We are here to satisfy your cravings of meals from the Michelin Guide's list of restaurants!\n"
-    "Just follow the next 3 instructions to find restaurants which suit YOUR delicious dining desires!\n"
-    "First, please input a city followed by a comma and its country of origin. Ex: Miami, USA\n";
-    // user puts city
-    getline(cin, city);
-
-    cout << "Next, please input the amount of stars you intend to dine at (1-3)." << endl;
-    // user puts stars
-    getline(cin, stars);
-    // allows user to enter a number versus "1 Star"
-    if(stars == "1") {
-        stars += " Star";
-    } else if (stars == "2" || stars == "3") {
-        stars += " Stars";
-    } else {
-        cout << "You did not enter a star count from 1-3 so there is no such restaurant.\n"
-                "Would you like to see recommended selected restaurants from the Michelin Guide that fit your criteria instead?\n"
-                "Please enter Y or N\n";
-        string selected;
-        getline(cin, selected);
-
-        if (selected == "Y" || selected == "y") {
-            stars = "Selected Restaurants";
-
-        } else {
-            return 1;
-        }
-    }
-
-
-    cout << "Lastly, please input the price range from you intend to dine at. Ex: $-$$$$\n"
-            "PLEASE NOTE: The type of currency MUST match the currency of the country you plan to dine in!" << endl;
-    // user enters price
-    getline(cin, price);
-
-
-    // testing data parsing
+    // Load dataset and create maps only once
     string filename = "../data/michelin_my_maps.csv";
     vector<Restaurant> restaurants = loadDataset(filename);
 
-    // MY WORK
-    cout << "OPEN ADDRESSING RESULT: \n\n";
-
+    // Open Addressing setup
+    auto startOAInsert = high_resolution_clock::now();
     OpenAddressHashMap<string,
-    OpenAddressHashMap<string,
-    OpenAddressHashMap<string, vector<Restaurant>>>> Michelin;
+            OpenAddressHashMap<string,
+                    OpenAddressHashMap<string, vector<Restaurant>>>> Michelin;
     mapInsertionsOA(restaurants, Michelin);
-    printRestaurantsOA(Michelin, city, stars, price);
+    auto endOAInsert = high_resolution_clock::now();
 
-    cout << "SEPARATE CHAINING RESULT: \n\n";
-
-    // ELYS WORK
+    // Separate Chaining setup
+    auto startSCInsert = high_resolution_clock::now();
     SeparateChaining<string,
-    SeparateChaining<string,
-    SeparateChaining<string, vector<Restaurant>>>> scMap; // using restaurant vector to give more info to user
+            SeparateChaining<string,
+                    SeparateChaining<string, vector<Restaurant>>>> scMap;
     updateMaps(restaurants, scMap);
-    sepChainingPrint(scMap, city, stars, price);
+    auto endSCInsert = high_resolution_clock::now();
+
+    long long durationOAInsert = duration_cast<milliseconds>(endOAInsert - startOAInsert).count();
+    long long durationSCInsert = duration_cast<milliseconds>(endSCInsert - startSCInsert).count();
+
+    while (true) {
+        string rawCity, rawStars, rawPrice;
+
+        cout << "\nEnter City, Country (e.g., Miami, USA): ";
+        getline(cin, rawCity);
+        if (rawCity == "exit") break;
+        string city = normalizeCity(rawCity);
+
+        cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars): ";
+        getline(cin, rawStars);
+        if (rawStars == "exit") break;
+        string stars = normalizeStars(rawStars);
+
+        // Handle invalid stars
+        if (stars != "1 Star" && stars != "2 Stars" && stars != "3 Stars" && stars != "Selected Restaurants") {
+            cout << "Invalid star rating. Would you like to see 'Selected Restaurants' instead? (Y/N): ";
+            string choice;
+            getline(cin, choice);
+            if (choice == "Y" || choice == "y") {
+                stars = "Selected Restaurants";
+            } else {
+                cout << "Invalid input. Exiting.\n";
+                break;
+            }
+        }
+
+        cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): ";
+        getline(cin, rawPrice);
+        if (rawPrice == "exit") break;
+        string price = trim(rawPrice);
+
+        cout << "\nSearching...\n\n";
+
+        // Open Addressing
+        auto startOAQuery = high_resolution_clock::now();
+        cout << "OPEN ADDRESSING RESULT:\n\n";
+        printRestaurantsOA(Michelin, city, stars, price);
+        auto endOAQuery = high_resolution_clock::now();
+        auto durationOAQuery = duration_cast<milliseconds>(endOAQuery - startOAQuery).count();
+
+        cout << "Open Addressing - Insertion Time: " << durationOAInsert << " ms\n";
+        cout << "Open Addressing - Access Time:     " << durationOAQuery << " ms\n";
+
+        // Separate Chaining
+        auto startSCQuery = high_resolution_clock::now();
+        cout << "\nSEPARATE CHAINING RESULT:\n\n";
+        sepChainingPrint(scMap, city, stars, price);
+        auto endSCQuery = high_resolution_clock::now();
+        auto durationSCQuery = duration_cast<milliseconds>(endSCQuery - startSCQuery).count();
+
+        cout << "Separate Chaining - Insertion Time: " << durationSCInsert << " ms\n";
+        cout << "Separate Chaining - Access Time:     " << durationSCQuery << " ms\n";
+        cout << "--------------------------------------------------\n";
+    }
+
+    cout << "\nThank you for using MichelinMunch. Goodbye!" << endl;
     return 0;
 }
+
