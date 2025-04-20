@@ -1,18 +1,14 @@
-#include <iostream>
+#pragma once
 #include <vector>
 #include <optional>
-
-using namespace std;
-
-
+#include <functional>
 template<typename Key, typename Value>
 class OpenAddressHashMap {
 private:
     struct Bucket {
         Key key;
-        Value value;
-        bool occupied;
-        //bool deleted
+        optional<Value> value; // only constructs vals when needed
+        bool occupied = false;
     };
 
     vector<Bucket> table;
@@ -20,8 +16,8 @@ private:
     int size;
     float loadFactor;
 
-    // uses std::hash to hash key values 7
-    int hashing(const Key &key) const {
+    // Primary hash function (mod capacity)
+    int hashing(const Key& key) const {
         return hash<Key>{}(key) % capacity;
     }
 
@@ -30,91 +26,91 @@ private:
         capacity *= 2;
         vector<Bucket> newTable(capacity);
 
-        for (const auto &bucket: table) {
+        for (auto& bucket : table) {
             if (bucket.occupied) {
-                int index = hash<Key>{}(bucket.key) % capacity;
-                while (newTable[index].occupied) {
-                    index = (index + 1) % capacity;
+                int idx = hash<Key>{}(bucket.key) % capacity;
+                while (newTable[idx].occupied) {
+                    idx = (idx + 1) % capacity;
                 }
-                newTable[index] = bucket;
+                newTable[idx].occupied = true;
+                newTable[idx].key = move(bucket.key);
+                newTable[idx].value = move(bucket.value);
             }
         }
-
-        table = newTable;
+        table = move(newTable);
     }
 
 public:
-    OpenAddressHashMap(int cap = 1000) : capacity(cap), size(0), loadFactor(0.75f) {
-        table.resize(capacity);
-    }
+    // constructor
+    OpenAddressHashMap(int cap = 1000)
+      : table(cap), capacity(cap), size(0), loadFactor(0.75f)
+    {}
 
-    void insert(const Key &key, const Value &value) {
-        if(static_cast<float>(size + 1) / capacity >= loadFactor) {
+    // inserts key-value pairs for map
+    void insert(const Key& key, const Value& val) {
+        if (static_cast<float>(size + 1) / capacity >= loadFactor) {
             resize();
         }
-        int index = hash<Key>{}(key) % capacity;
-        // Open Address Through Linear Probing
-        while(table[index].occupied && table[index].key != key) {
-            index = (index + 1) % capacity;
+        int idx = hashing(key);
+        // linear probing approach
+        while (table[idx].occupied && table[idx].key != key) {
+            idx = (idx + 1) % capacity;
         }
-
-        if(!table[index].occupied) {
-            table[index].value = value;
-            table[index].occupied = true;
-            table[index].key = key;
-            size++;
+        if (!table[idx].occupied) {
+            table[idx].occupied = true;
+            table[idx].key      = key;
+            table[idx].value.emplace(val);
+            ++size;
         } else {
             // overwrites value if key exists
-            table[index].value = value;
+            table[idx].value = val;
         }
+    }
+
+    // replicates maps' [] operation with avg case O(1) runtime
+    // access keys and returns reference to value
+    Value& operator[](const Key& key) {
+        if (static_cast<float>(size + 1) / capacity >= loadFactor) {
+            resize();
+        }
+        int idx = hashing(key);
+        while (table[idx].occupied && table[idx].key != key) {
+            idx = (idx + 1) % capacity;
+        }
+        if (!table[idx].occupied) {
+            table[idx].occupied = true;
+            table[idx].key = key;
+            table[idx].value.emplace();
+            ++size;
+        }
+        return *table[idx].value;
     }
 
     // uses optional to safely return if key isnt found
     optional<Value> search(const Key& key) const {
-        int index = hashing(key);
-        int probeCount = 0;
-
-        while (probeCount < capacity) {
-            int probe = (index + probeCount) % capacity;
-
-            if (!table[probe].occupied) {
+        int start = hashing(key);
+        for (int probe = 0; probe < capacity; ++probe) {
+            int idx = (start + probe) % capacity;
+            if (!table[idx].occupied) {
+                // table breaks if empty bucket
                 break;
             }
-            if (table[probe].key == key) {
-                return table[probe].value;
+            if (table[idx].key == key) {
+                // returns table's index if keys match
+                return table[idx].value;
             }
-            ++probeCount;
         }
-
+        // returns "no value"
         return nullopt;
     }
-
-    Value& operator[](const Key& key) {
-        if(static_cast<float>(size + 1) / capacity >= loadFactor) {
-            resize();
-        }
-        int index = hashing(key);
-        while (table[index].occupied && table[index].key != key) {
-            index = (index + 1) % capacity;
-        }
-        if(!table[index].occupied) {
-            table[index].occupied = true;
-            table[index].key = key;
-            size++;
-        }
-        return table[index].value;
-    }
-
 
     // checks if key exists
     bool contains(const Key& key) const {
         return search(key).has_value();
     }
 
-
-
-
-
-    int getSize() { return size; }
-
+    // Current number of stored key-value pairs
+    int getSize() const {
+        return size;
+    }
 };
