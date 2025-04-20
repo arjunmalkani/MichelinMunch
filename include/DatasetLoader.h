@@ -1,29 +1,37 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <unordered_set>
+#include <algorithm>
+#include <string>
 #include "../include/Restaurant.h"
 
 using namespace std;
 
 // helper to normalize price to dollar format
 string normalizePrice(const string& rawPrice) {
+    // add all the currencies present in dataset
+    vector<string> currencySymbols = {"$", "€", "£", "¥", "₩", "฿", "₺", "₫", "﷼"};
     int count = 0;
-    for (size_t i = 0; i < rawPrice.size(); ++i) {
-        // check for dollar sign
-        if (rawPrice[i] == '$') {
-            count++;
+
+    for (size_t i = 0; i < rawPrice.size(); ) {
+        // check up to 4-bytes
+        bool matched = false;
+        for (int len = 1; len <= 4 && i + len <= rawPrice.size(); ++len) {
+            string symbol = rawPrice.substr(i, len);
+            if (find(currencySymbols.begin(), currencySymbols.end(), symbol) != currencySymbols.end()) {
+                count++;
+                i += len;
+                matched = true;
+                break;
+            }
         }
-        // check for the other currency symbols using substrings and handles each type in dataset
-        else if (rawPrice.substr(i, 2) == "€" || rawPrice.substr(i, 2) == "£" ||
-                 rawPrice.substr(i, 2) == "¥" || rawPrice.substr(i, 2) == "₩"
-                 || rawPrice.substr(i, 2) == "฿", rawPrice.substr(i, 2) == "₺" ||
-                rawPrice.substr(i, 2) == "₫" || rawPrice.substr(i, 2) == "﷼") {
-            count++;
-            i++; // skip next byte since
-        }
+        if (!matched) i++;  // skip non-currency characters
     }
-    return string(count, '$');  // normalize to $$$
+
+    return string(count, '$'); // append into dollar
 }
+
 
 vector<Restaurant> loadDataset(const string& filename) {
     vector<Restaurant> restaurants;

@@ -215,8 +215,7 @@ int main() {
             }
         }
 
-        cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): \n"
-                "Please Note: Currency type must match selected region's currency! (e.g., USA = $)" << endl;
+        cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): \n";
         getline(cin, rawPrice);
         if (rawPrice == "exit") break;
         string price = trim(rawPrice);
