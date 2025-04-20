@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <optional>
 
 using namespace std;
 
@@ -13,29 +14,33 @@ private:
         bool occupied;
         //bool deleted
     };
+
     vector<Bucket> table;
     int capacity;
     int size;
     float loadFactor;
 
     // uses std::hash to hash key values 7
-    int hashing(const Key& key) const {
+    int hashing(const Key &key) const {
         return hash<Key>{}(key) & capacity;
     }
 
     // helper function for insert to resize table and rehash key values
     void resize() {
-        vector<Bucket> oldTable = table;
         capacity *= 2;
-        table.clear();
-        table.resize(capacity);
-        size = 0;
+        vector<Bucket> newTable(capacity);
 
-        for (const auto& bucket : oldTable) {
-            if (bucket.occupied) {
-                insert(bucket.key, bucket.value);
+        for (const auto &bucket: table) {
+            if (bucket.isOccupied) {
+                int index = hash<Key>{}(bucket.key) % capacity;
+                while (newTable[index].isOccupied) {
+                    index = (index + 1) % capacity;
+                }
+                newTable[index] = bucket;
             }
         }
+
+        table = newTable;
     }
 
 public:
@@ -43,57 +48,44 @@ public:
         table.resize(capacity);
     }
 
-    void insert(const Key& key, const Value& value) {
-        if((size/capacity) >= loadFactor) {
+    void insert(const Key &key, const Value &value) {
+        if((size / capacity) >= loadFactor) {
             resize();
         }
+        int index = hash<Key>{}(key) % capacity;
+        // Open Address Through Linear Probing
+        while(table[index].isOccupied) {
+            index = (index + 1) % capacity;
+        }
 
-        // gets index by getting key's hash value and doing mod capacity
-        int index = hashing(key) % capacity;
-        int probeCounter = 0;
+        if(!table[index].isOccupied || table[index].key == key) {
+            table[index].value = value;
+            table[index].occupied = true;
+            table[index].key = key;
+            size++;
+        }
+    }
 
-        // using quadratic probing to avoid clusters
-        while (probeCounter < capacity) {
-            // probeCounter quadractically increases for fitting probe location
-            int probe = (index + probeCounter * probeCounter) % capacity;
+    std::optional<Value> search(const Key& key) const {
+        int index = hashing(key);
+        int probeCount = 0;
 
-            // if probed index is not occupied or the key is the same, place into index
-            if(!table[probe].occupied || table[probe].key == key) {
-                // bucket's key value pairs get set and it becomes occupied
-                table[probe].key = key;
-                table[probe].value = value;
-                table[probe].occupied = true;
-                size++;
-                return;
+        while (probeCount < capacity) {
+            int probe = (index + probeCount) % capacity;
+
+            if (!table[probe].occupied) {
+                break;
             }
-            // if table is occupied, probeCounter increases and loop repeats until found index
-            probeCounter++;
+            if (table[probe].key == key) {
+                return table[probe].value;
+            }
+            ++probeCount;
         }
+
+        return std::nullopt;
     }
 
-    // returns value of input key to user
-    const Value& search(const Key& key) const {
-        int index = hashing(key) % capacity;
-        int probeCounter = 0;
-        while (probeCounter < capacity) {
-            int probe = (index + probeCounter * probeCounter) % capacity;
 
-            if (!table[probe].occupied) break;
-            if (table[probe].key == key) return table[probe].value;
-            probeCounter++;
-        }
-        throw runtime_error("Key not found");
-    }
-
-    // checks if key exists
-    bool contains(const Key& key) const {
-        try {
-            const_cast<OpenAddressHashMap*>(this)->search(key);
-            return true;
-        } catch (const std::runtime_error&) {
-            return false;
-        }
-    }
 
     int getSize() { return size; }
 
