@@ -13,9 +13,11 @@ string normalizePrice(const string& rawPrice) {
         if (rawPrice[i] == '$') {
             count++;
         }
-            // check for the other currency symbols using substrings
+        // check for the other currency symbols using substrings and handles each type in dataset
         else if (rawPrice.substr(i, 2) == "€" || rawPrice.substr(i, 2) == "£" ||
-                 rawPrice.substr(i, 2) == "¥") {
+                 rawPrice.substr(i, 2) == "¥" || rawPrice.substr(i, 2) == "₩"
+                 || rawPrice.substr(i, 2) == "฿", rawPrice.substr(i, 2) == "₺" ||
+                rawPrice.substr(i, 2) == "₫" || rawPrice.substr(i, 2) == "﷼") {
             count++;
             i++; // skip next byte since
         }
