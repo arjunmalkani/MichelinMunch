@@ -191,19 +191,20 @@ int main() {
     while (true) {
         string rawCity, rawStars, rawPrice;
 
-        cout << "\nEnter City, Country (e.g., Miami, USA): ";
+        cout << "Enter City, Country (e.g., Miami, USA): " << endl;
         getline(cin, rawCity);
         if (rawCity == "exit") break;
         string city = normalizeCity(rawCity);
 
-        cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars): ";
+        cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars): " << endl;
         getline(cin, rawStars);
         if (rawStars == "exit") break;
         string stars = normalizeStars(rawStars);
 
         // Handle invalid stars
-        if (stars != "1 Star" && stars != "2 Stars" && stars != "3 Stars" && stars != "Selected Restaurants") {
-            cout << "Invalid star rating. Would you like to see 'Selected Restaurants' instead? (Y/N): ";
+        if (stars != "1 Star" && stars != "2 Stars" && stars != "3 Stars" && stars != "Selected Restaurants" &&
+            stars != "1" && stars != "2" && stars != "3") {
+            cout << "Invalid star rating. Would you like to see 'Selected Restaurants' instead? (Y/N): " << endl;
             string choice;
             getline(cin, choice);
             if (choice == "Y" || choice == "y") {
@@ -214,7 +215,8 @@ int main() {
             }
         }
 
-        cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): ";
+        cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): \n"
+                "Please Note: Currency type must match selected region's currency! (e.g., USA = $)" << endl;
         getline(cin, rawPrice);
         if (rawPrice == "exit") break;
         string price = trim(rawPrice);
