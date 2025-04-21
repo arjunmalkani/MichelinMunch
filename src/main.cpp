@@ -26,7 +26,7 @@ string normalizeStars(const string& input) {
     return s;
 }
 
-// makes sure user inputs of the city are case-insensitive
+// makes sure user inputs of city are accepted regardless of spacing format
 string normalizeCity(const string& input) {
     return trim(input);
 }
