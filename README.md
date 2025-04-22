@@ -22,7 +22,7 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
    - [Shifting Our Design](#shifting-our-design)
    - [Preparing To Code](#preparing_to_code)
 		
-- [Developing](#developing)  
+- [development](#development)  
 - [Usage](#usage)  
 - [Dataset](#dataset)  
 - [Project Structure](#project-structure)  
@@ -39,3 +39,4 @@ Following our proposal from Project 3a, our group made key design changes. Afte
 ### Preparing To Code ###
 When preparing to code our project, we initialized our GitHub workflow by creating the repo, cloning locally, and becoming comfortable with terminal Git commands. By facilitating an understanding of Git and establishing clear communication, we were able to ensure smooth collaboration amongst all members for the duration of the project. Lastly, with the GitHub foundation set, each member created the files they would work on and researched their assigned module and how to implement it. 
 
+## Development
