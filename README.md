@@ -22,7 +22,6 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
    - [Shifting Our Design](#shifting-our-design)
    - [Preparing To Code](#preparing-to-code)
 		
-- [Developing_Our_Project](#developing-our-project)  
 - [Usage](#usage)  
 ---
 
@@ -33,13 +32,6 @@ Following our proposal from Project 3a, our group made key design changes. Afte
 
 ### Preparing To Code ###
 When preparing to code our project, we initialized our GitHub workflow by creating the repo, cloning locally, and becoming comfortable with terminal Git commands. By facilitating an understanding of Git and establishing clear communication, we were able to ensure smooth collaboration amongst all members for the duration of the project. Lastly, with the GitHub foundation set, each member created the files they would work on and researched their assigned module and how to implement it. 
-
-## Developing Our Project
-
-### Open Addressing HashMap
-Developing the open addressing hashmap (OA) consisted of many attempts and commits to resolve issues and understand the concept better. Using [Medium.com's](https://medium.com/@omerhalidcinar/building-your-own-hashmap-in-c-open-addressing-separate-chaining-implementations-ead22ca955c2) OA class as inspiration allowed for a better understanding of the coding of OA hashmaps. We modeled our buckets as an internal struct holding key, value, occupation status much like their Entry struct. For our OA class, we implemented core functions like insert(), resize(), hashing(), and search() (mirroring get() in Medium's design as well as others). As for our probing method, we decided to user linear probing as we found the implementation simpler considering the amount of data that was parsed.
-
-During development, we encountered a major performance bug tied to our triple-nested approach: each default-constructed OA map started with a capacity of 1,000 buckets, so nesting three layers created 1,000³ (1 billion) buckets and caused severe lag or freezes. The fix was to leverage std::optional<Value> for bucket storage, ensuring that only occupied buckets allocate values and allowing search() to safely return std::nullopt for missing keys. This change eliminated unnecessary memory allocation and restored expected performance as seen in our displayed runtimes.
 
 ## Usage
 ### Running the Program ##
