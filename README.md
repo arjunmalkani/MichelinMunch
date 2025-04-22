@@ -5,8 +5,7 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
 
 ## Features
 
-- **Triple‑layered maps** by City → Star Rating → Price Level  
-  – Built with  
+- **Triple‑layered maps** by City → Star Rating → Price Level   
   &nbsp;&nbsp;• Separate chaining (`HashMapChaining.h`)  
   &nbsp;&nbsp;• Open addressing (`HashMapOpen.h`)  
 - **Dataset loader** (`DatasetLoader.h`):  
