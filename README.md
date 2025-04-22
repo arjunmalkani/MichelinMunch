@@ -1,7 +1,7 @@
   # MichelinMunch
   **UF COP3530 Project 3 by Anthony Perez, Arjun Malkani, and Elizabeth Gonzalez**
 
-A C++ command‑line tool for discovering affordable Michelin‑rated restaurants using two custom hash‑map implementations (separate‑chaining & open‑addressing) and timing their performance.
+A C++ CLI based program for discovering affordable Michelin‑rated restaurants using two custom hash‑map implementations (separate‑chaining & open‑addressing) and timing their performance to see which has better results.
 
 ## Features
 
