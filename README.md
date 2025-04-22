@@ -41,14 +41,3 @@ Following our proposal from Project 3a, our group made key design changes. Afte
 ### Preparing To Code ###
 When preparing to code our project, we initialized our GitHub workflow by creating the repo, cloning locally, and becoming comfortable with terminal Git commands. By facilitating an understanding of Git and establishing clear communication, we were able to ensure smooth collaboration amongst all members for the duration of the project. Lastly, with the GitHub foundation set, each member created the files they would work on and researched their assigned module and how to implement it. 
 
-### Prerequisites
-
-- C++17‑compatible compiler (e.g. `g++`, `clang++`)  
-- CMake ≥ 3.10 (optional but recommended)  
-- Git
-
-### Clone the repo
-
-```bash
-git clone https://github.com/<your‑org>/MichelinMunch.git
-cd MichelinMunch
