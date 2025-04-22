@@ -30,9 +30,12 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
 ---
 
 ## Getting Started
-Following our proposal from Project 3a, our group had to make alterations to the initial plan. After realizing that hash maps would be a better implementation to service our project, we shifted our design goals to fit this new idea. This includes discussing the implementation of hash maps for our project, deciding the triple nested approach, and also deciding to compare separate chaining to open addressing. Therefore, we could use user inputs as keys and layer the maps as values until reaching the desired list of restaurants. After making this decision, we altered the distribution of roles for Anthony and Elizabeth, who were tasked with creating the sorting algorithms, by having them create the open addressed hash map and separate chaining hash map respectively.
 
-Getting started with the coding required us to first facilitate an understanding of Git. We did so by creating our repository on GitHub, cloning the repositories to our local machine, and learning the different Git commands for the terminal and how to use them. Doing this was crucial for our collaborative efforts to be unanimously agreed upon and simple to approach. Lastly, once developing the basic foundations of our project through Git, we researched our assigned portions of the project and how to implement them in our project.
+### Shifting Our Design ###
+Following our proposal from Project 3a, our group made key design changes. After unanimously determining hash maps would better support our search functionality, we adopted a triple‑nested map approach (City → Star Rating → Price Level) and decided to compare separate chaining vs. open addressing. This made our end goal more feasible as user inputs would now serve as successive keys through these layers until the final list of matching restaurants. To fit this change, we reassigned roles: Anthony built the open addressing hash map, and Elizabeth implemented the separate chaining map.
+
+### Preparing To Code ###
+When preparing to code our project, we initialized our GitHub workflow by creating the repo, cloning locally, and becoming comfortable with terminal Git commands. By facilitating an understanding of Git and establishing clear communication, we were able to ensure smooth collaboration amongst all members for the duration of the project. Lastly, with the GitHub foundation set, each member created the files they would work on and researched their assigned module and how to implement it. 
 
 ### Prerequisites
 
