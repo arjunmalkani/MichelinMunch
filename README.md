@@ -20,7 +20,7 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-        -[Shifting Our Design](#shifting-our-design)
+  -[Shifting Our Design](#shifting-our-design)
 - [Building](#building)  
 - [Usage](#usage)  
 - [Dataset](#dataset)  
