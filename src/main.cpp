@@ -196,24 +196,23 @@ int main() {
         if (rawCity == "exit") break;
         string city = normalizeCity(rawCity);
 
-        cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars): " << endl;
+        cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars), 'Selected Restaurants', or 'Bib Gourmand': " << endl;
         getline(cin, rawStars);
         if (rawStars == "exit") break;
         string stars = normalizeStars(rawStars);
 
-        // Handle invalid stars
-        if (stars != "1 Star" && stars != "2 Stars" && stars != "3 Stars" && stars != "Selected Restaurants" &&
-            stars != "1" && stars != "2" && stars != "3") {
-            cout << "Invalid star rating. Would you like to see 'Selected Restaurants' instead? (Y/N): " << endl;
-            string choice;
-            getline(cin, choice);
-            if (choice == "Y" || choice == "y") {
-                stars = "Selected Restaurants";
-            } else {
-                cout << "Entered N or invalid input. Exiting.\n";
-                break;
-            }
+        // ugly implementation but was meant to not mess with normalizeStars()
+        if(stars == "bib gourmand"){
+            stars = "Bib Gourmand";
         }
+        else if (stars == "selected restaurants") {
+            stars = "Selected Restaurants";
+        }
+        else if (stars != "1 Star" && stars != "2 Stars" && stars != "3 Stars" && stars != "1" && stars != "2" && stars != "3") {
+            cout << "Invalid star rating." << endl << endl;
+            continue;
+        }
+
 
         cout << "Enter Price Level (e.g., $, $$, $$$, $$$$): \n";
         getline(cin, rawPrice);
