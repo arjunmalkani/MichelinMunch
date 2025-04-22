@@ -265,20 +265,23 @@ int main() {
         cout << "-----------------------------------------------------------------------------------------------------------------------\n\n";
 
         // option for users to see restaurant descriptions for more details
-        cout << "Would you like to see the restaurant descriptions? Y/N" << endl;
-        string descript;
-        getline(cin, descript);
+        if(!matches.empty()) {
+            cout << "Would you like to see the restaurant descriptions? Y/N" << endl;
+            string descript;
+            getline(cin, descript);
 
-        if(descript == "Y" || descript == "Yes" || descript == "yes" || descript == "y") {
-            for(auto& match : matches) {
-                cout << "-----------------------------------------------------------------------------------------------------------------------\n"
-                << match.name << "'s description is: \n" << match.description << endl;
+            if(descript == "Y" || descript == "Yes" || descript == "yes" || descript == "y") {
+                for(auto& match : matches) {
+                    cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+                    << match.name << "'s description is: \n" << match.description << endl;
+                }
+            } else if (descript == "exit") {
+                break;
+            } else {
+                cout << "Choice is either N or invalid. Restarting!" << endl;
             }
-        } else if (descript == "exit") {
-            break;
-        } else {
-            cout << "Choice is either N or invalid. Restarting!" << endl;
         }
+
     }
 
     cout << "\nThank you for using MichelinMunch. Goodbye!" << endl;
