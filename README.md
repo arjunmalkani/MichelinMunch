@@ -24,11 +24,6 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
 		
 - [Developing_Our_Project](#developing-our-project)  
 - [Usage](#usage)  
-- [Dataset](#dataset)  
-- [Project Structure](#project-structure)  
-- [Contributing](#contributing)  
-- [License](#license)
-
 ---
 
 ## Getting Started
