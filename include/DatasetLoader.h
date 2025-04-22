@@ -74,8 +74,12 @@ vector<Restaurant> loadDataset(const string& filename) {
         r.address = fields[1];
         r.location = fields[2];
         r.price = normalizePrice(fields[3]);
+        r.phone = fields[7];
+        r.michelinWebsite = fields[8];
+        r.officialWebsite = fields[9];
         r.cuisine = fields[4];
         r.starCount = fields[10];
+        r.description = fields[13];
 
         restaurants.push_back(r);
 
