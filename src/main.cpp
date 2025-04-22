@@ -70,7 +70,7 @@ void updateMaps(vector<Restaurant> &restaurants,
 void sepChainingPrint(SeparateChaining<string,
         SeparateChaining<string,
                 SeparateChaining<string, vector<Restaurant>>>>& scMap,
-                      const string& city, const string& stars, const string& price) {
+                      const string& city, const string& stars, const string& price, vector<Restaurant> &matches) {
 
     if (!scMap.contains(city)) {
         cout << "No restaurants found in city: " << city << endl;
@@ -89,7 +89,7 @@ void sepChainingPrint(SeparateChaining<string,
         return;
     }
 
-    auto& matches = priceMap.search(price);
+    matches = priceMap.search(price);
 
     cout << "Found " << matches.size()
          << " restaurants in " << city
@@ -100,9 +100,10 @@ void sepChainingPrint(SeparateChaining<string,
         cout << "Name:    " << r.name << "\n"
              << "Address: " << r.address << "\n"
              << "Cuisine: " << r.cuisine << "\n";
-        if (!r.website.empty()) cout << "Website: " << r.website << "\n";
+        if (!r.officialWebsite.empty()) cout << "Restaurant Website: " << r.officialWebsite << "\n";
+        if (!r.michelinWebsite.empty()) cout << "Michelin Website: " << r.michelinWebsite << "\n";
         if (!r.phone.empty()) cout << "Phone:   " << r.phone << "\n";
-        cout << "---------------------------\n";
+        cout << "-----------------------------------------------------------------------------------------------------------------------\n";
     }
 }
 
@@ -138,9 +139,10 @@ void printRestaurantsOA(
         cout << "Name:    " << r.name << "\n"
                 << "Address: " << r.address << "\n"
                 << "Cuisine: " << r.cuisine << "\n";
-        if (!r.website.empty()) cout << "Website: " << r.website << "\n";
+        if (!r.officialWebsite.empty()) cout << "Restaurant Website: " << r.officialWebsite << "\n";
+        if (!r.michelinWebsite.empty()) cout << "Michelin Website: " << r.michelinWebsite << "\n";
         if (!r.phone.empty()) cout << "Phone:   " << r.phone << "\n";
-        cout << "---------------------------\n";
+        cout << "-----------------------------------------------------------------------------------------------------------------------\n";
     }
 }
 
@@ -161,9 +163,9 @@ void mapInsertionsOA(vector<Restaurant> &restaurants, OpenAddressHashMap<string,
 
 
 int main() {
-    cout << "Welcome to MichelinMunch!\n"
+    cout << "-----------------------------------------------------------------------------------------------------------------------\nWelcome to MichelinMunch!\n"
          << "You can search for restaurants by city, star rating, and price.\n"
-         << "Type 'exit' at any point to quit.\n\n";
+         << "Type 'exit' at any point to quit.\n";
 
     // Load dataset and create maps only once
     string filename = "../data/michelin_my_maps.csv";
@@ -189,16 +191,31 @@ int main() {
     long long durationSCInsert = duration_cast<milliseconds>(endSCInsert - startSCInsert).count();
 
     while (true) {
+        // list of all matched restaurants to print descriptions later if needed
+        // updates by passing by references into SC hashmap (could have been OA too
+        // but using both would have double pushed the restaurants)
+        vector<Restaurant> matches;
+
         string rawCity, rawStars, rawPrice;
 
-        cout << "Enter City, Country (e.g., Miami, USA): " << endl;
+        cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+                "Enter City, Country (e.g., Miami, USA): " << endl;
         getline(cin, rawCity);
         if (rawCity == "exit") break;
+
+        if(rawCity.empty()) {
+            cout << "Empty Submission! Restarting!" << endl;
+            continue;
+        }
         string city = normalizeCity(rawCity);
 
         cout << "Enter Star Rating (e.g., 1 star, 2 stars, 3 stars), 'Selected Restaurants', or 'Bib Gourmand': " << endl;
         getline(cin, rawStars);
         if (rawStars == "exit") break;
+        if(rawCity.empty()) {
+            cout << "Empty Submission! Restarting!" << endl;
+            continue;
+        }
         string stars = normalizeStars(rawStars);
 
         // ugly implementation but was meant to not mess with normalizeStars()
@@ -218,6 +235,10 @@ int main() {
                 "Please Note: Currency type must match selected region's currency! (e.g., USA = $)" << endl;
         getline(cin, rawPrice);
         if (rawPrice == "exit") break;
+        if(rawCity.empty()) {
+            cout << "Empty Submission! Restarting!" << endl;
+            continue;
+        }
         string price = trim(rawPrice);
 
         cout << "\nSearching...\n\n";
@@ -235,13 +256,29 @@ int main() {
         // Separate Chaining
         auto startSCQuery = high_resolution_clock::now();
         cout << "\nSEPARATE CHAINING RESULT:\n\n";
-        sepChainingPrint(scMap, city, stars, price);
+        sepChainingPrint(scMap, city, stars, price, matches);
         auto endSCQuery = high_resolution_clock::now();
         auto durationSCQuery = duration_cast<milliseconds>(endSCQuery - startSCQuery).count();
 
         cout << "Separate Chaining - Insertion Time: " << durationSCInsert << " ms\n";
         cout << "Separate Chaining - Access Time:     " << durationSCQuery << " ms\n";
-        cout << "--------------------------------------------------\n";
+        cout << "-----------------------------------------------------------------------------------------------------------------------\n\n";
+
+        // option for users to see restaurant descriptions for more details
+        cout << "Would you like to see the restaurant descriptions? Y/N" << endl;
+        string descript;
+        getline(cin, descript);
+
+        if(descript == "Y" || descript == "Yes" || descript == "yes" || descript == "y") {
+            for(auto& match : matches) {
+                cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+                << match.name << "'s description is: \n" << match.description << endl;
+            }
+        } else if (descript == "exit") {
+            break;
+        } else {
+            cout << "Choice is either N or invalid. Restarting!" << endl;
+        }
     }
 
     cout << "\nThank you for using MichelinMunch. Goodbye!" << endl;

@@ -14,6 +14,8 @@ struct Restaurant {
 
     // users would want this info too so i added it and was part of initial project scope
     // - ant :3
-    string website;
+    string officialWebsite;
+    string michelinWebsite;
     string phone;
+    string description;
 };
