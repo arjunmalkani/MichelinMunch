@@ -47,5 +47,5 @@ Developing the open addressing hashmap (OA) consisted of many attempts and commi
 During development, we encountered a major performance bug tied to our triple-nested approach: each default-constructed OA map started with a capacity of 1,000 buckets, so nesting three layers created 1,000³ (1 billion) buckets and caused severe lag or freezes. The fix was to leverage std::optional<Value> for bucket storage, ensuring that only occupied buckets allocate values and allowing search() to safely return std::nullopt for missing keys. This change eliminated unnecessary memory allocation and restored expected performance as seen in our displayed runtimes.
 
 ## Usage
-## Running the Program ##
+### Running the Program ##
 To run our program, first clone the repository. Once cloned, open the project in CLion and navigate to the cloned folder.  CLion will automatically detect and load the CMake project. After the project finishes indexing and building, you can run the program by clicking the green "Run" button in the top-right corner or pressing Shift + F10. The program will execute from the default main executable.
