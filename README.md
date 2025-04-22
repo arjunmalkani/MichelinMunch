@@ -1,4 +1,4 @@
-  # MichelinMunch
+  # MichelinMunch - Project 3
 
 A C++ command‑line tool for discovering affordable Michelin‑rated restaurants using two custom hash‑map implementations (separate‑chaining & open‑addressing) and timing their performance.
 
