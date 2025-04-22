@@ -22,7 +22,8 @@ A C++ CLI based program for discovering affordable Michelin‑rated restaurants 
    - [Shifting Our Design](#shifting-our-design)
    - [Preparing To Code](#preparing-to-code)
 		
-- [Usage](#usage)  
+- [Usage](#usage)
+- [Plagiarism Notice](#plagiarism-notice)
 ---
 
 ## Getting Started
@@ -36,3 +37,6 @@ When preparing to code our project, we initialized our GitHub workflow by creati
 ## Usage
 ### Running the Program ##
 To run our program, first clone the repository. Once cloned, open the project in CLion and navigate to the cloned folder.  CLion will automatically detect and load the CMake project. After the project finishes indexing and building, you can run the program by clicking the green "Run" button in the top-right corner or pressing Shift + F10. The program will execute from the default main executable.
+
+## Plagiarism Notice
+This project belongs to Anthony Perez, Elizabeth Gonzalez, and Arjun Malkani **ONLY**. If there is any form of plagiarism performed based on our original work or any use of our work without proper credit we will not be afraid take action in order to defend our self image and personal integrity.
